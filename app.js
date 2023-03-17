@@ -1,23 +1,22 @@
 const express = require('express');
 const helmet = require("helmet");
 const mongoose = require('mongoose');
-const dotenv = require("dotenv");
-dotenv.config();
 
 const sauceRoutes = require('./routes/sauceRoute');
 const userRoutes = require('./routes/userRoute');
 const path = require('path');
 const app = express();
-const MY_PORT = process.env.PORT;
-const MY_APP_SECRET = process.env.APP_SECRET;
+
+const dotenv = require("dotenv");
+dotenv.config();
 
 //Autorisation d'image
 mongoose.set('strictQuery', true);
 app.use(express.json());
 app.use(helmet.contentSecurityPolicy({ directives: { "img-src": ["'self'"] } }));
 
-// Connection à Mongoose
-mongoose.connect('mongodb+srv://UberId:Terrine59@cluster0.zqjkexv.mongodb.net/?retryWrites=true&w=majority',
+// Connection à MongoDB
+mongoose.connect(`mongodb+srv://${process.env.USERID}:${process.env.MP}@cluster0.zqjkexv.mongodb.net/?retryWrites=true&w=majority`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -33,10 +32,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  return res.send(MY_APP_SECRET);
-});
-app.listen(MY_PORT, () => console.log(`Server running on port ${MY_PORT}`));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
